@@ -1,0 +1,150 @@
+import subprocess as sp
+import pyttsx3
+import speech_recognition as sr
+import datetime 
+import os 
+import shutil
+
+
+engine = pyttsx3.init('sapi5') 
+voices = engine.getProperty('voices') 
+engine.setProperty('voice', voices[1].id) 
+
+def speak(audio): 
+    engine.say(audio) 
+    engine.runAndWait() 
+
+def wishMe(): 
+    hour = int(datetime.datetime.now().hour) 
+    if hour>= 0 and hour<12: 
+        speak("Good Morning Sir !") 
+   
+    elif hour>= 12 and hour<18: 
+        speak("Good Afternoon Sir !")    
+   
+    else: 
+        speak("Good Evening Sir !")   
+    
+    speak("I am your voice assistant for Amazon Web Services") 
+    speak("My name is Blink")
+
+def usrname(): 
+    speak("What should i call you sir") 
+    uname = takeCommand() 
+    speak("Welcome Mister") 
+    speak(uname) 
+    columns = shutil.get_terminal_size().columns 
+      
+    print("#####################".center(columns)) 
+    print("Welcome Mr.", uname.center(columns)) 
+    print("#####################".center(columns)) 
+      
+    speak("How can i Help you, Sir") 
+
+def takeCommand(): 
+      
+    r = sr.Recognizer() 
+      
+    with sr.Microphone() as source: 
+          
+        print("Listening...") 
+        r.pause_threshold = 1
+        audio = r.listen(source) 
+   
+    try: 
+        print("Recognizing...")     
+        query = r.recognize_google(audio, language ='en-in') 
+        print(f"User said: {query}\n") 
+   
+    except Exception as e: 
+        print(e)     
+        print("Unable to Recognizing your voice.")   
+        return "None"
+      
+    return query 
+
+if __name__ == '__main__': 
+    clear = lambda: os.system('cls') 
+      
+    # This Function will clean any 
+    # command before execution of this python file 
+    clear() 
+    wishMe() 
+    usrname() 
+      
+    while True: 
+          
+        msg = takeCommand().lower()
+        speak('Please wait') 
+        if (msg == 'launch'):
+            speak('AWS is getting launched...') 
+            output1 = sp.getstatusoutput("aws --version")
+            print(output1[1])
+            speak('choose your services')
+            continue
+        if (msg == 'generate'):
+            speak('Your request for creating a key pair is being processed')
+            print()
+            speak('please speak the name for key pair that you want to set')
+            query = takeCommand()
+            output1 = sp.getstatusoutput('aws ec2 create-key-pair --key-name "{}"'.format(query))
+            print(output1[1])
+            speak('Key pair creation is successfull')
+            speak('choose your next service')
+            continue
+        if (msg == 'security'):
+            speak('Your request for creating a security group is being processed ')
+            print()
+            speak('please tell the name for security group that you want to set')
+            query = takeCommand()
+            output1 = sp.getstatusoutput('aws ec2 create-security-group --group-name "{}" --description "ssh"'.format(query))
+            print(output1[1])
+            speak('Security group creation is successfull')
+            speak('choose your next service')
+            continue
+        if (msg == 'server'):
+            speak('Your request for creating an ec2 instance is accepted')
+            print()
+            speak('please enter the below values for processing the instance creation')
+            sg_id = input("enter the security group id:")
+            insta_type = input("enter the instance type:")
+            image_id = input("enter the image id:")
+            key_name = input("enter the key name:")
+            count = input("enter how many instances do you wanna create at a time:")
+            speak('Your request is being processed')
+            output1 = sp.getstatusoutput('aws ec2 run-instances   --security-group-ids "{0}"  --instance-type "{1}" --image-id "{2}" --key-name "{3}" --count "{4}"'.format(sg_id, insta_type, image_id, key_name, count))
+            print(output1[1])
+            speak("EC2 instance creation is successful")
+            speak('choose your next service')
+            continue
+        if (msg == 'volume'):
+            speak('Your request for creating an EBS volume is being processed')
+            print()
+            speak('Please enter the availbility zone')
+            value = input("enter the name of availability zone:")
+            output1 = sp.getstatusoutput('aws ec2 create-volume --volume-type gp2 --size 10 --availability-zone "{0}"'.format(value))
+            print(output1[1])
+            speak('volume creation is successfull')
+            speak('choose your next service')
+            continue
+        if (msg == 'mount'):
+            speak('Your request for attaching a disk to an EC2 instance is accepted')
+            print()
+            speak('please enter the below values for processing')
+            vol_id = input("enter the volume id:")
+            insta_id = input("enter the instance id:")
+            device_id = input("enter the device name for mounting the volume:")
+            output1 = sp.getstatusoutput('aws ec2  attach-volume --volume-id "{0}" --instance-id "{1}"  --device "{2}"'.format(vol_id, insta_id, device_id)) 
+            print(output1[1])
+            speak('volume attachment is successfull')
+            speak('choose your next service')
+            continue
+        if (msg == 'exit'): 
+            speak("Thanks for giving me your time") 
+            exit()
+            
+            
+            
+            
+            
+        
