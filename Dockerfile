@@ -159,4 +159,8 @@ EXPOSE 22
 EXPOSE 8080
 CMD java -jar jenkins.war
 
+Successfull code:
+
+
+
 
