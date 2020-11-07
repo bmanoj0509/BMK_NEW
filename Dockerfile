@@ -290,6 +290,92 @@ start.sh file for Jenkins:
  
 (/usr/sbin/sshd -D) & (cd "/tmp" && java -jar jenkins.war)
 
+IIEC Task2 <validating the user credentials and then assking for input commands and then printing the output )
+
+Validating the user !!!
+
+[root@test-server html]# cat /var/www/cgi-bin/pswdvalidation.py 
+#!/usr/bin/python3
+  
+import cgi
+form = cgi.FieldStorage()
+inpass = form.getvalue("k")
+if(inpass == "zbfzxBDBOX5"):
+    print("content-type: text/html")
+    print("location: http://34.101.132.215/iiectask2_new2.html")
+    print()
+else:
+    print("content-type: text/html\r\n\r\n")
+    print()
+    print("Password authentication  is not successful")
+
+Reading the inputs from validated user
+
+[root@test-server html]# cat iiectask2_new2.html 
+<form action = "http://34.101.132.215/cgi-bin/iiectask2.py" method = "post">
+        <body style="background-color:yellow;text-align:center">
+                <div style = "text-align: center; display:inline-block; width:1350px; margin:0px">
+                        <div>
+                                <font size = "+5">
+                                        <b> Welcome to Red Hat Enterprise Linux 8 Operating System </b>
+                                        </br>
+                                        </br>
+                                </font>
+                                </br>
+                                <font size ="+2">
+                                        </br><u> Please choose any command from drop down box as per your query </u>
+
+                                </br>
+                                                <select name ='i'>
+                                                        <option disabled selected value> -- select an option -- </option>
+                                                        <option> ps -aux</option>
+                                                        <option> date</option>
+                                                        <option> cal</option>
+                                                </select>
+                                </font>
+                                </br>
+                                <font size ="+2">
+                                        <u><br>Didn't you find your required command in dropdown list? Then enter your command below:(Beaware to use 'sudo' to make privilege esaclation)</br></u>
+
+                                                <input name = 'j' type = 'text'>
+                                                <input type = 'submit'/>
+                                </font>
+                        </div>
+                </div>
+        </body>
+</form>
+
+Giving the required for the query asked by validated user:
+
+[root@test-server html]# cat /var/www/cgi-bin/iiectask2.py 
+#!/usr/bin/python3
+print("content-type: text/htmli\r\n\r\n")
+print()
+import subprocess as sp
+import cgi
+form = cgi.FieldStorage()
+cmd1 = form.getvalue("i")
+cmd2 = form.getvalue("j")
+#cmd1 = "ps -aux"
+#cmd2 = "systemctl ststus httpd"
+print("Please wait while the system is executing your command !!!")
+if(cmd1 is not None):
+    if(cmd1 is not "-- select an option --"):
+        output1=sp.getstatusoutput(cmd1)
+        print('Output for your first command "{}" is'.format(cmd1))
+        print(output1[1])
+        print("\n\n\n")
+if(cmd2 is not None):
+    output2=sp.getstatusoutput(cmd2)
+    if(output2[0] == 0):
+        print('Output for your other command "{}" is'.format(cmd2))
+        print(output2[1])
+    else:
+        print('This command "{}" execution is not successfull'.format(cmd2))
+        print(output2[1])
+        
+    
+
 
 
 
